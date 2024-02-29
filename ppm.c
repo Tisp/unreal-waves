@@ -16,8 +16,11 @@ void ppmSetPixel(Image image, uint16_t x, uint16_t y, Pixel pixel) {
 }
 
 void ppmSave(Image image, const char *fileName) {
-  (void)fileName;
-  FILE *file = stdout; // fopen(fileName, "wb");
+  FILE *file = fopen(fileName, "wb");
+  if (file == NULL) {
+    fprintf(stderr, "Fail to open the file");
+  }
+
   const char *comment = "# No comment";
   fprintf(file, "P6\n%s\n%hu %hu\n%d\n", comment, image.width, image.height,
           255);
