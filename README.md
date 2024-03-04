@@ -1,4 +1,4 @@
-# Unreal waves simulation using [openMP](https://www.openmp.org/) library
+# Unreal waves simulation using [openMP](https://www.openmp.org/) API
 
 
 Let's simulate a fantasy rainstorm on an imaginary planet, generating unreal waves. To make the scene a little more surreal, a special material covers the entire edge of the rectangular lake, completely absorbing the waves that touch it.
