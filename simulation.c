@@ -25,13 +25,12 @@ void lakeHeightMaxMin(float lake[], Input input, float *max, float *min) {
 }
 
 void updateLakePoint(float lake[], Point point, DroppedPoints droppedPoints,
-                     float timestep, Input input) {
+                     Input input) {
   float wave_high = 0;
   for (size_t t = 0; t < droppedPoints.count; ++t) {
-    // Point p2 = {.x = i, .y = j};
-    float dist = distance(point, droppedPoints.items[t]);
-    float propagation =
-        wavePropagationHeight(dist, timestep, input.wavePropagationSpeed);
+    float dist = distance(point, droppedPoints.items[t].point);
+    float propagation = wavePropagationHeight(dist, droppedPoints.items[t].time,
+                                              input.wavePropagationSpeed);
     wave_high += propagation;
   }
   float p = wave_high;
@@ -47,7 +46,6 @@ void createLakeImage(float lake[], Input input, size_t n_int) {
 
   float max, min;
   lakeHeightMaxMin(lake, input, &max, &min);
-
   Image image = ppmNewImage(input.lakeSize.width, input.lakeSize.height);
   float delta = fmaxf(max, -min) / 255;
 
@@ -55,14 +53,14 @@ void createLakeImage(float lake[], Input input, size_t n_int) {
     for (size_t j = 0; j < input.lakeSize.width; ++j) {
       int offset = i * input.lakeSize.width + j;
       if (lake[offset] > 0) {
-        Pixel pixel = {
-            .R = 255, .G = 255, .B = (int)ceil(lake[offset] / delta)};
+        int component = (int)ceil(lake[offset] / delta);
+        Pixel pixel = {.R = 0, .G = 0, .B = component};
         ppmSetPixel(image, i, j, pixel);
       }
 
       if (lake[offset] < 0) {
-        Pixel pixel = {
-            .R = (int)ceil(-lake[offset] / delta), .G = 255, .B = 255};
+        int component = (int)ceil(-lake[offset] / delta);
+        Pixel pixel = {.R = component, .G = 0, .B = 0};
         ppmSetPixel(image, i, j, pixel);
       }
     }
@@ -70,9 +68,10 @@ void createLakeImage(float lake[], Input input, size_t n_int) {
 
   char fileNamePrefix[] = "wave_";
   char fileNameExt[] = ".ppm";
-  char result[10000] = {0};
+  char result[100] = {0};
   snprintf(result, sizeof(result), "images/%s%zu%s", fileNamePrefix, n_int,
            fileNameExt);
   ppmSave(image, result);
-  ppmFreeImage(image.pixels);
+  image.pixels = NULL;
+  ppmFreeImage(image);
 }

@@ -9,7 +9,7 @@ Image ppmNewImage(uint16_t width, uint16_t height) {
   return image;
 }
 
-void ppmFreeImage(Pixel *image) { free(image); }
+void ppmFreeImage(Image image) { free(image.pixels); }
 
 void ppmSetPixel(Image image, uint16_t x, uint16_t y, Pixel pixel) {
   image.pixels[x * image.width + y] = pixel;
@@ -19,6 +19,7 @@ void ppmSave(Image image, const char *fileName) {
   FILE *file = fopen(fileName, "wb");
   if (file == NULL) {
     fprintf(stderr, "Fail to open the file");
+    exit(-1);
   }
 
   const char *comment = "# No comment";
@@ -39,5 +40,4 @@ void ppmSave(Image image, const char *fileName) {
 
   fwrite(realPixels, sizeof(pixel_t), image.height * image.width, file);
   fclose(file);
-  // free(realPixels);
 }

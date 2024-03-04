@@ -1,6 +1,6 @@
 FROM gcc:latest
-
+RUN apt update && apt install time valgrind -y
 COPY . /app
 WORKDIR /app
-run make
-ENTRYPOINT ["./waves", "input2"]
+RUN make
+ENTRYPOINT ["./waves"]
